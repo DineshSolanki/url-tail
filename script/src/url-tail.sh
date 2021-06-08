@@ -4,9 +4,9 @@ if [ $# -lt 1 ]; then
 	echo "Syntax: url-tail.sh <URL> [<starting tail offset in bytes>]"
 	exit 1
 fi
-
 url=$1
-
+filename=${1##*/}
+logpath=~/dev/scripts/templogs/${filename}
 tail_off=0
 if [ $# -eq 2 ]; then
 	case $2 in
@@ -44,7 +44,7 @@ function print_tail() {
 	off=$2
 	len=$3
 
-	curl --header "Range: bytes=$off-$len" -s $url
+	curl --header "Range: bytes=$off-$len" -s $url >> ${logpath}
 }
 
 
@@ -59,7 +59,7 @@ fi
 len=`get_length $url`
 off=$((len - tail_off))
 
-
+code $logpath
 until [ "$off" -gt "$len" ]; do
 	len=`get_length $url`
 
